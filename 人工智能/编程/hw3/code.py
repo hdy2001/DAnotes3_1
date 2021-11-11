@@ -51,18 +51,44 @@ def ext_feature(train_X, test_X):
     return train_feature, test_feature
 
 
-def train(w, b, X, Y, alpha=0.1, epochs=50, batchsize=32):
+def train(w, b, X, Y, alpha=0.1, epochs=200, batchsize=32):
     """
     YOUR CODE HERE
     """
-    
+    def pi_x(XX, ww, bb):
+        return 1/(np.exp(-(ww*XX+bb))+1)
+    for i in range(epochs):
+        shuffle(X, Y)
+        Batch = X.shape[0] // batchsize
+        for j in range(Batch):   
+            train_x = X[i*batchsize : (i+1)*batchsize]
+            train_y = Y[i*batchsize : (i+1)*batchsize]
+            db = alpha * np.sum(train_y - pi_x(train_x, w, b)) / batchsize
+            dw = alpha * np.sum((train_y - pi_x(train_x, w, b)) * train_x) / batchsize
+            w += dw
+            b += db   
     return w, b
+
 
 
 def test(w, b, X, Y):
     """
     YOUR CODE HERE
     """
+    # 使用Accruracy方法
+    def pi_x(XX):
+        return 1/(np.exp(-(w*XX+b))+1)
+    pred = (pi_x(X)>0.5)
+    answer = (Y == pred)
+    # TODO: 计算这个
+    TP = np.sum(answer)
+    TN = len(np.sum(answer) - TP)
+    
+    ans = np.sum(answer)/len(answer)
+    print("使用Accruracy方法准确率为：")
+    print(ans)
+
+    # 使用BER方法
 
 
 
@@ -71,7 +97,7 @@ if __name__ == "__main__":
     train_X, train_Y, test_X, test_Y = load_data()
     # 抽取特征
     train_feature, test_feature = ext_feature(train_X, test_X)
-    
+
     # 随机初始化参数
     w = np.random.randn()
     b = np.random.randn()
@@ -80,3 +106,6 @@ if __name__ == "__main__":
     """
     YOUR CODE HERE
     """
+    w, b = train(w, b, train_feature, train_Y)
+    print(w,b)
+    test(w, b, train_feature, train_Y)

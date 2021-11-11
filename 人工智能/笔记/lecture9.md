@@ -55,7 +55,7 @@ $$
   
     对大量观测值 $y =\left\{y_{i}\right\}_{1 \leq i \leq n}$
     $$
-    -\frac{1}{n} \sum_{i=1}^{n}\left(y_{i} \log \pi\left(x_{i}\right)+\left(1-y_{i}\right) \log \left(1-\pi\left(x_{i}\right)\right)\right) \quad \pi\left(x_{i}\right)=\frac{e^{\left[x_{i}+b\right.}}{1+e^{w_{i}+b}}
+    -\frac{1}{n} \sum_{i=1}^{n}\left(y_{i} \log \pi\left(x_{i}\right)+\left(1-y_{i}\right) \log \left(1-\pi\left(x_{i}\right)\right)\right) \quad \pi\left(x_{i}\right)=\frac{e^{\omega x_{i}+b}}{1+e^{wx_{i}+b}}
     $$
     
     能够**最小化交叉嫡损失函数**的参数 $w$ 和 $b$ 即为所求
