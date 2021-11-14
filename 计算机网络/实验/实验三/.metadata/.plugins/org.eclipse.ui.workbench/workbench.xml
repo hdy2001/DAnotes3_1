@@ -174,7 +174,7 @@
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@718955" ratio="0.78458846" ratioLeft="448" ratioRight="123" relationship="4" relative="org.eclipse.ui.editorss">
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@718955" ratio="0.08056042" ratioLeft="46" ratioRight="525" relationship="4" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">

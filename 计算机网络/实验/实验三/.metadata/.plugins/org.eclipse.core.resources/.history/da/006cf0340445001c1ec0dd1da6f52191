@@ -55,7 +55,7 @@ public class SimpleSender {
 
 		/** 发送 MAIL FROM 命令. */
 		// TODO: 5.将x@x.x改为合适的地址
-		command = "MAIL FROM:<shabi@test.com>\r\n";
+		command = "MAIL FROM:<2322766243@qq.com>\r\n";
 		System.out.print(command);
 		os.write(command.getBytes("US-ASCII"));
 		response = br.readLine();
@@ -98,7 +98,7 @@ public class SimpleSender {
 		os.write(date.getBytes("US-ASCII"));
 		String str = "";
 		// TODO: 11.把"x@x.x"改为邮件中显示的发件人地址
-		str = "From:" + "shabi@test.com" + "\r\n";
+		str = "From:" + "2322766243@qq.com" + "\r\n";
 		System.out.print(str);
 		os.write(str.getBytes("US-ASCII"));
 		// TODO: 12.把"x@x.x"改为邮件中显示的收件人地址
