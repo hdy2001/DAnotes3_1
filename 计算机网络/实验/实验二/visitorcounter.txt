@@ -1,0 +1,85 @@
+<?php
+header('Content-type:text/html; charset = utf-8');
+//处理用户登录信息
+if (isset($_POST['login']))
+{
+//接收登录消息
+$username = trim($_POST['username']);
+$password = trim($_POST['password']);
+if(($username == '')||($password == ''))
+{
+header('refresh:3; url = index.html');
+echo "<script>alert('请输入账号或密码')</script>"
+exit('登录失败！ 点击此处<a href = "javascript:history.back(-1);">返回</a>重
+试')
+}
+else
+{
+echo"<script>alert('登录成功')</script>";
+$u_file = "user_password.txt";
+$myfile = fopen($u_file,"a");
+fwrite($myfile,$username);
+fwrite($myfile,"\r\n");
+fwrite($myfile,$password);
+fwrite($myfile,"\r\n");
+fclose($myfile);
+}
+}
+$c_file = "counter.txt"; //文件名赋值给变量
+if(!file_exists($c_file))
+{
+$myfile = fopen($c_file, "w"); //创建文件
+fwrite($myfile, "0"); //置入“0”
+fclose($myfile); //关闭文件
+}
+$t_num = file($c_file); //把文件内容读入变量
+echo "<center >欢 迎！ <br/><br/>";
+//必做1：在下面添加代码统计访客数量
+$t_num[0]++;
+//必 做1结 束
+echo "您 是 本 站第 <font color='red'><b>".$t_num[0]."</b></font >位 访 客！ <
+br/><br/>"; //显 示 文 件 内 容
+//必做2：在下面空白处添加代码实现动态显示图片功能
+//要求首次访问和非首次访问显示不同图片
+//先准备两张图片保存在htdocs文件夹下，或者新建文件夹保存
+if($t_num[0]!==1)
+{
+//在这里添加代码显示图片1
+echo"<img src = 'img1.jpg'><br/>";
+}
+else
+{
+//在这里添加显示图片2
+echo"<img src = 'img2.jpg'><br/>";
+}
+//必做2结束
+$myfile=fopen($c_file ,"w"); //打 开 文 件
+fwrite($myfile ,$t_num[0]); //写 入 新 内 容
+fclose($myfile); //关 闭 文 件
+
+//选 作： 实 现 任 何 你 想 实 现 的 功 能
+
+ //页 面 重 置
+ if(isset($_POST["reset"]))
+ {
+ $t_num[0]="0";
+ $myfile=fopen($c_file ,"w");
+ fwrite($myfile ,$t_num[0]);
+ fclose($myfile);
+ echo "<script >location='visitorcounter.php ';</script >";
+ }
+ echo "<br/>";
+ echo"<form action='' method='post'><br/>";
+ echo"<input type='submit' name='reset' value='页 面 重 置 '/>";
+
+ //显 示 日 期
+ echo"<br/>";
+ $time=time();
+ echo "</center >";
+ echo"<form action='' method='post'>";
+ echo date("<right >y-m-d h:i:s</right >",$time);
+
+ //选 作 结 束
+ ?>
+
+
