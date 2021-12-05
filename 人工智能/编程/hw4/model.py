@@ -36,8 +36,6 @@ class SoftmaxNet(nn.Module):
         x = self.softmax(x)
         return x
 
-
-# TODO: 补充前馈神经网络结构
 class FCNet(nn.Module):
     #初始化网络结构
     def __init__(self):

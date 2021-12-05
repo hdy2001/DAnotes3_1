@@ -24,7 +24,7 @@ class MyDataset(Dataset):
                  transform=None,
                  target_transform=None,
                  loader=default_loader):
-        fh = open(txt, 'r')
+        fh = open(txt, 'r', encoding='UTF-8')
         imgs = []
         for line in fh:
             line = line.strip('\n')
@@ -48,20 +48,19 @@ class MyDataset(Dataset):
 
 
 train_data = MyDataset(txt=root + 'train.txt', transform=transform)
-# test_data = MyDataset(txt=root + 'test.txt', transform=transform)
+test_data = MyDataset(txt=root + 'test.txt', transform=transform)
 
 #train_data 和test_data包含多有的训练与测试数据，调用DataLoader批量加载
 train_loader = DataLoader(dataset=train_data, batch_size=64, shuffle=True)
-# test_loader = DataLoader(dataset=test_data, batch_size=64)
+test_loader = DataLoader(dataset=test_data, batch_size=64)
 
 # 输出测试
-train_features, train_labels = next(iter(train_loader))
+train_features, train_labels = next(iter(test_loader))
 print(f"Feature batch shape: {train_features.size()}")
 print(f"Labels batch shape: {train_labels.size()}")
 print(train_features[0].shape)
 img = train_features[0].squeeze()
 print(img.shape)
 label = train_labels[0]
-plt.imshow(img)
-plt.show()
 print(f"Label: {label}")
+print(len(train_loader.dataset))

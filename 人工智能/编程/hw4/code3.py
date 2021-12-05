@@ -53,6 +53,7 @@ test_counter = [i * len(train_loader.dataset) for i in range(n_epochs + 1)]
 def train(epoch):
     network.train()
     for batch_idx, (data, target) in enumerate(train_loader):
+        print(data.shape)
         optimizer.zero_grad()
         output = network(data)
         loss = F.nll_loss(output, target)
