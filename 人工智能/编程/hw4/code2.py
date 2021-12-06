@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from model import FCNet
 import torch.nn as nn
 import torch.optim as optim
+import comment
 
 n_epochs = 3
 batch_size_train = 64
@@ -75,19 +76,15 @@ def train(epoch):
 # 测试：后期需要加入其他评判指标
 def test():
     network.eval()
-    test_loss = 0
-    correct = 0
     with torch.no_grad():
-        for data, target in test_loader:
-            output = network(data)
-            _, pred = torch.max(output, 1)
-            correct += (pred == target).sum()
-    print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct.item(), len(test_loader.dataset),
-        100. * correct.item() / len(test_loader.dataset)))
+        _, (data, targets) = next(enumerate(test_loader))
+        output = network(data)
+        pred = output.data.max(1, keepdim=True)[1].reshape(-1)
+        comment.test_sklearn(targets.numpy(), pred.numpy())
 
 
 # 卷积神经网络进行数字识别
 for epoch in range(1, n_epochs + 1):
     train(epoch)
-    test()
+
+test()
