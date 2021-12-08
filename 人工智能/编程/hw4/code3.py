@@ -80,8 +80,6 @@ def test():
         comment.test_sklearn(targets.numpy(), pred.numpy())
 
 
-
-
 # 卷积神经网络进行数字识别
 for epoch in range(1, n_epochs + 1):
     train(epoch)
