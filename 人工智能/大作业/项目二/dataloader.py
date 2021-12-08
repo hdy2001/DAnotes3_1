@@ -55,12 +55,12 @@ train_loader = DataLoader(dataset=train_data, batch_size=64, shuffle=True)
 test_loader = DataLoader(dataset=test_data, batch_size=64)
 
 # 输出测试
-train_features, train_labels = next(iter(test_loader))
-print(f"Feature batch shape: {train_features.size()}")
-print(f"Labels batch shape: {train_labels.size()}")
-print(train_features[0].shape)
-img = train_features[0].squeeze()
-print(img.shape)
-label = train_labels[0]
-print(f"Label: {label}")
-print(len(train_loader.dataset))
+# train_features, train_labels = next(iter(test_loader))
+# print(f"Feature batch shape: {train_features.size()}")
+# print(f"Labels batch shape: {train_labels.size()}")
+# print(train_features[0].shape)
+# img = train_features[0].squeeze()
+# print(img.shape)
+# label = train_labels[0]
+# print(f"Label: {label}")
+# print(len(train_loader.dataset))
