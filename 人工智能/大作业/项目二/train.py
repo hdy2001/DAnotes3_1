@@ -1,6 +1,6 @@
 import torch
 import torchvision.models as models
-from model import ConvNet
+from model import VGG16
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -13,7 +13,11 @@ print(device)
 # TODO: 目前的难题是：图片数量太少了，需要对图片数据集进行增多
 
 # 参数设置
-n_epochs = 20
+'''
+lr0.0001适合resnet18和vgg19_bn，都在百分之八十上下
+decay一开始为0最合适
+'''
+n_epochs = 30
 learning_rate = 0.0001
 momentum = 0.5
 log_interval = 10
@@ -27,10 +31,9 @@ R_mean: 0.569971, G_mean: 0.569971, B_mean: 0.569971
 R_std: 0.279340, G_std: 0.279340, B_std: 0.279340
 """
 
-# TODO: 可以进行数据增强
-
 transform_train = transforms.Compose([
     transforms.Resize([224, 224]),
+    transforms.RandomGrayscale(1),
     transforms.ToTensor(),
     transforms.Normalize((0.569971, 0.569971, 0.569971),
                          (0.279340, 0.279340, 0.279340))
@@ -51,13 +54,19 @@ train_loader = DataLoader(dataset=train_data, batch_size=10, shuffle=True)
 test_loader = DataLoader(dataset=test_data, batch_size=10)
 
 # 初始化网络
-model = models.resnet18(pretrained=True, progress=True).to(device)
-model.fc = nn.Linear(model.fc.in_features, 2).to(device)
+# model = models.resnet18(pretrained=True, progress=True).to(device)
+# model.fc = nn.Linear(model.fc.in_features, 2).to(device)
+model = models.vgg19_bn(pretrained=True).to(device)
+model.classifier._modules['6'] = nn.Sequential(nn.Linear(4096, 2)).to(device)
+
 criterion = nn.CrossEntropyLoss()
 # TODO: 优化adam
+# optimizer = optim.Adam(model.parameters(),
+#                        lr=learning_rate,
+#                        weight_decay=0.0001)
 optimizer = optim.Adam(model.parameters(),
                        lr=learning_rate,
-                       weight_decay=0.0001)
+                       weight_decay=0.00001)
 
 train_losses = []
 train_counter = []
