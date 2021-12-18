@@ -1,6 +1,7 @@
 import numpy as np
 import time
 import sys
+import copy
 if sys.version_info.major == 2:
     import Tkinter as tk
     from Tkinter import PhotoImage
@@ -38,8 +39,7 @@ class Maze(tk.Tk, object):
             self.canvas.create_line(x0, y0, x1, y1)
 
         origin = np.array([UNIT / 2, UNIT / 2])
-
-        self.bm_trap = PhotoImage(file="人工智能/编程/hw5/trap.png")
+        self.bm_trap = PhotoImage(file="trap.png")
         self.trap1 = self.canvas.create_image(origin[0] + UNIT * 2,
                                               origin[1] + UNIT,
                                               image=self.bm_trap)
@@ -47,12 +47,12 @@ class Maze(tk.Tk, object):
                                               origin[1] + UNIT * 2,
                                               image=self.bm_trap)
 
-        self.bm_mouse = PhotoImage(file="人工智能/编程/hw5/mouse.png")
+        self.bm_mouse = PhotoImage(file="mouse.png")
         self.mouse = self.canvas.create_image(origin[0],
                                               origin[1],
                                               image=self.bm_mouse)
 
-        self.bm_cheese = PhotoImage(file="人工智能/编程/hw5/cheese.png")
+        self.bm_cheese = PhotoImage(file="cheese.png")
         self.cheese = self.canvas.create_image(origin[0] + 2 * UNIT,
                                                origin[1] + 2 * UNIT,
                                                image=self.bm_cheese)
@@ -127,14 +127,18 @@ class Maze(tk.Tk, object):
 # ============== 以下是Maze使用示例 ==============
 
 
-def update(env):
+def update(env, policy=None):
     # 更新图形化界面
     env.reset()
     time.sleep(5)
-    for t in range(4):
+    state = [0, 0]
+    while True:
         env.render()
-        a = 1
-        s, done = env.step(a)
+        s, done = env.step(policy[state[0]][state[1]])
+        if done:
+            env.render()
+            break
+        state = [int((s[0] - 50) / 100), int((s[1] - 50) / 100)]
         time.sleep(1)
     env.destroy()
 
@@ -143,55 +147,94 @@ def update(env):
 """
 选择价值迭代算法
 """
-v = [[0, 0, 0, 0, 0], [0, 0, -100, 0, 0], [0, -100, 100, 0, 0],
-     [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+r = [[-1, -1, -1, -1, -1], [-1, -1, -10000000, -1, -1],
+     [-1, -100000000, 10000, -1, -1], [-1, -1, -1, -1, -1],
+     [-1, -1, -1, -1, -1]]
 
-r = [[-1, -1, -1, -1, -1], [-1, -1, -100, -1, -1], [-1, -100, 100, -1, -1],
-     [-1, -1, -1, -1, -1], [-1, -1, -1, -1, -1]]
-
-gamma = 0.5
+gamma = 0.
 
 
-def max_action(state, env):
-    max_value = r[state[0]][state[1]] + gamma * v[state[0]][state[1]]
-    max_action = 0
-    for action in range(0, 4):
-        reward = r[state[0]][state[1]]
-        state, _ = env.step(action, move=False)
-        state = [int((state[0] - 50) / 100), int((state[1] - 50) / 100)]
-        # print(state)
-        new_value = reward + gamma * v[state[0]][state[1]]
-        max_value = max(new_value, max_value)
-        if max_value == new_value: max_action = action
-    return max_value, max_action
+def moveOnestep(action, state):
+    if action == 0:  # 向左移动
+        if state[1] > 0:
+            state[1] -= 1
+    elif action == 2:  # 向右移动
+        if state[1] < 4:
+            state[1] += 1
+    elif action == 1:  # 向下移动
+        if state[0] < 4:
+            state[0] += 1
+    elif action == 3:  # 向上移动
+        if state[0] > 0:
+            state[0] -= 1
+
+    return state
 
 
-def train(env):
-    env.reset()
-    time.sleep(3)
-    s = [0, 0]
+# 用现有策略更新价值函数
+def policy_evaluate(v, policy):
     for _ in range(100):
+        now_v = np.copy(v)
         for i in range(0, 5):
             for j in range(0, 5):
-                # env.render()
-                # value = v[s[0]][s[1]]
                 s = [i, j]
-                if s == [1, 2] or s == [2, 2] or s == [2, 3]:
-                    v[i][j], a = max_action(s, env)
-                # s, done = env.step(a)
-                # s = [int(s[0] / 50 - 1), int(s[1] / 50 - 1)]
-                # if done: s = [0, 0]
-                # time.sleep(1)
+                # 如果状态结束，就跳过
+                if s == [1, 2] or s == [2, 1] or s == [2, 2]:
+                    v[i][j] = r[i][j]
+                    continue
+                # 未结束找到最佳更新
+                action = policy[i][j]
+                next_state = moveOnestep(action, s[:])
+                # 如果动作合法则更新矩阵
+                if next_state != s:
+                    v[i][j] = r[next_state[0]][next_state[1]] + 0.1 * now_v[
+                        next_state[0]][next_state[1]]
+
         print(v)
 
+    return v
 
-def test():
-    pass
+
+# TODO: de这个bug
+# 用现有价值函数更新策略
+def policy_improve(v, policy):
+    for i in range(0, 5):
+        for j in range(0, 5):
+            rewards = {}
+            s = [i, j]
+            for action in range(0, 4):
+                # 合法动作则更新state
+                # next_state, _ = env.step(action)
+                next_state = moveOnestep(action, s[:])
+                # 如果原地不动则不更新
+                if s == [1, 2] or s == [2, 1] or s == [2, 2
+                                                       ] or next_state == s:
+                    next_state = s[:]
+                    continue
+                reward = r[next_state[0]][
+                    next_state[1]] + 0.1 * v[next_state[0]][next_state[1]]
+                rewards.update({action: reward})
+            # 选出最优策略，如果没有就不更新
+            if len(rewards) > 0:
+                print(max(rewards, key=rewards.get))
+                policy[i][j] = max(rewards, key=rewards.get)
+
+    return policy
 
 
 if __name__ == '__main__':
     env = Maze()
-    train(env)
-    # 开始运行
-    test()
-# ============== Maze使用示例结束 ==============
+    # 随机生成初始策略
+    policy = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+    v = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0],
+         [0, 0, 0, 0, 0]]
+    for _ in range(50):
+        v = policy_evaluate(v, policy)
+        # 开始运行
+        policy = policy_improve(v, policy)
+
+    print(policy)
+
+    # 开始执行程序
+    update(env, policy)
