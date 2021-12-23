@@ -50,7 +50,7 @@ M=1 , L=2 , T=9
 $$
 带入得到方法误差为：
 $$
-\Delta_{n+1}\leq0.25\times 10^{-9}
+\Delta_{n+1}\leq0.25\times 10^{-m}
 $$
 分析**舍入误差**
 $$
@@ -63,11 +63,13 @@ $$
 $$
 代入$M, L,T$得到：
 $$
-\delta_{n+1}\leq 0.25\times 10^{-9}
+\delta_{n+1}\leq 0.25\times 10^{-m}
 $$
-以$z=2$为例解出来的得到
+以$z=2$为例解出来的得到（精确到小数点后六位）
 
-
+$$
+W_0(2) = 0.852606
+$$
 
 ## 3 求解定积分
 
@@ -84,26 +86,62 @@ $$
 \end{aligned}
 $$
 
-又根据上一问，可得$w_0(0) = 0, w_0(1) = $，代入上式并保留到小数点后六位的答案是：
-
 分析方法误差：
 
-
+此题使用解析解直接带求值，因此没有方法误差。
 
 分析舍入误差：
-
-
+$$
+|\Delta \mathrm{A}| \leq \max \left|\left(\frac{\partial I}{\partial x}\right)\right|\left|\Delta x\right|\\
+ = \max \left|\left(\frac{\partial I}{\partial x}\right)\right|\times\frac{1}{2}\times10^{-m}\\
+ = M \times\frac{1}{2}\times 10^{-m}
+$$
+其中$M$是当 $z=1$时的积分一次导数的最大值。
 
 ### (2)
 
-因为此题的积分无法计算出确切的解析表达式，因此我使用复化梯形公式进行了积分的估算，最后带入了第一问计算的结果：
+因为此题的积分无法计算出确切的解析表达式，因此我使用复化梯形公式进行了积分的估算：
 
+首先，将原积分进行换元为
+$$
+W_0(z) = t^2\\
+z = t^2e^{t^2}\\
+I=\int_{0}^{\sqrt{W_0(a)}}\left(2 t^{2}+2 t^{4}\right) e^{t^{2}} d t
+$$
+又复化梯形公式为：
+$$
+I=\frac{h}{2}\left[f(a)+2 \sum_{k=1}^{n-1} f\left(x_{k}\right)+f(b)\right]\\
+f(t) = (2 t^{2}+2 t^{4})e^{t^2}
+$$
+误差分析：
 
-
-
+分析方法误差：
+$$
+|R[f]|=\frac{n \cdot h^{3}}{12} |f^{\prime \prime}(\eta)|=\frac{ah^{2}}{12}| f^{\prime \prime}(\eta)|
+$$
+又，
+$$
+f^{\prime \prime}(t)=\left(8 t^{6}+44 t^{4}+44 t^{2}+4\right) e^{t^{2}},0\leq t \leq\sqrt{W_0(a)}
+$$
+故，
+$$
+f^{\prime \prime}(\eta)\leq\left(8 W_0^{3}(a)+44 W_0^{2}(a)+44 W_0(a)+4\right) e^{W_0(a)}
+$$
+所以方法误差：
+$$
+|R[f]|\leq\frac{a h^{2}}{12}\left(8 W_0^{3}(a)+44 W_0^{2}(a)+44 W_0(a)+4\right) e^{W_0(a)}
+$$
+分析舍入误差：
+$$
+\delta \leq\left|\frac{\partial I}{\partial h}\right|\delta h+\sum_{0 \leq k \leq n}\left|\frac{\partial I}{\partial f\left(x_{k}\right)}\right| \delta f\left(x_{k}\right)+\frac{1}{2} \times 10^{-m}\\
+\delta f\left(x_{k}\right) \leq\left|f^{\prime}\left(x_{k}\right)\right| \delta x_{k}+\frac{1}{2} \times 10^{-\mathrm{m}}\\
+\delta h ,\delta x_{k} \leq \frac{1}{2} \times 10^{-\mathrm{m}}
+$$
+代入以下值的上界即可，
+$$
+\left|\frac{\partial I}{\partial h}\right|,\left|f^{\prime}\left(x_{k}\right)\right|,\sum_{0 \leq k \leq n}\left|\frac{\partial I}{\partial f\left(x_{k}\right)}\right|
+$$
 
 ### (3)
 
-代入$a = 1$，结果为
-
-![image-20211221093302347](report.assets/image-20211221093302347.png)
+代入$a = 1$，第一问得到**0.330366**，第二问得到**0.550832**
